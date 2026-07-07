@@ -1,0 +1,5 @@
+node_modules/
+.next/
+.vercel
+readingroom.oneatatime.zip
+handoff-extract/

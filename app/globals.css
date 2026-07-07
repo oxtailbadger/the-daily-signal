@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* [TODO:PALETTE-TOKENS resolved] Reading Room design tokens — the palette
+   lives here; components reference var(--rr-*) instead of hex. */
+:root {
+  --rr-paper: #F1EEE6;
+  --rr-paper-card: #FFFFFF;
+  --rr-ink: #23302B;
+  --rr-ink-soft: #5C665F;
+  --rr-ink-body: #2B3833;
+  --rr-rule: #E4DED2;
+  --rr-blue: #43647E;
+  --rr-green: #4C795F;
+  --rr-clay: #94704E;
+  --rr-green-soft: #E7EFE9;
+  --rr-chip-text: #FFFFFF;
+  --rr-back-btn: #E9E4D8;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #4f6d5d;
+  outline-offset: 3px;
+}
