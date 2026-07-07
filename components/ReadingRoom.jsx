@@ -258,8 +258,26 @@ export default function ReadingRoom({ stories = [] }) {
             fontFamily: fonts.ui, fontSize: 12, fontWeight: 700,
             letterSpacing: "0.12em", textTransform: "uppercase", color: palette.green,
             background: "transparent", border: "none", cursor: "pointer", padding: 0,
+            display: "inline-flex", alignItems: "center", gap: 7,
           }}
         >
+          {/* lattice-mast mark, matches the app icon */}
+          <svg viewBox="88 40 336 400" width="17" height="20" aria-hidden="true">
+            <g stroke="var(--rr-green)" strokeWidth="20" fill="none" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M 226 416 L 250 128 M 286 416 L 262 128" />
+              <path d="M 233 348 L 281 310 M 231 310 L 279 348" />
+              <path d="M 239 276 L 275 244 M 237 244 L 273 276" />
+              <path d="M 244 212 L 270 186 M 242 186 L 268 212" />
+              <path d="M 196 416 L 316 416" />
+            </g>
+            <circle cx="256" cy="112" r="18" fill="var(--rr-clay)" />
+            <g stroke="var(--rr-clay)" strokeWidth="18" fill="none" strokeLinecap="round">
+              <path d="M 196 92 A 64 64 0 0 1 196 132" transform="rotate(180 196 112)" />
+              <path d="M 316 92 A 64 64 0 0 1 316 132" />
+              <path d="M 158 72 A 108 108 0 0 1 158 152" transform="rotate(180 158 112)" />
+              <path d="M 354 72 A 108 108 0 0 1 354 152" />
+            </g>
+          </svg>
           The Daily Signal
         </button>
         <h1 style={{ fontFamily: fonts.head, fontSize: 30, fontWeight: 700, color: palette.ink, lineHeight: 1.15, margin: "12px 0 0" }}>
