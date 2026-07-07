@@ -3,3 +3,4 @@ node_modules/
 .vercel
 readingroom.oneatatime.zip
 handoff-extract/
+.DS_Store
