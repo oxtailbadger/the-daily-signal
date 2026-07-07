@@ -29,5 +29,12 @@ Running log of choices and their reasons. Newest last.
   arriving without an image get their article page's og:image fetched
   server-side during the 4-hour revalidation (parallel, 6s timeout,
   fails soft to the tinted category block).
+- **Dementia-design v0 pass (pre-Mike)** — per published guidance (JMIR
+  review, Smashing, AbilityNet): restored the text-size toggle from the
+  original mock (persisted in localStorage as `ds-large-text`), added a
+  global button :active pressed state, darkened green (#4C795F→#426853)
+  and clay (#94704E→#836244) so all small-text pairings clear WCAG 4.5:1,
+  and bumped chip/masthead type 12→14px. Deliberately did NOT add settings,
+  personalization, or reading history — co-design those with Mike.
 - **Handoff JSX committed, zip not** — `handoff/ReadingRoom.OneAtATime.jsx`
   kept for provenance; the zip and extract folder are gitignored.

@@ -11,9 +11,10 @@
   --rr-ink-soft: #5C665F;
   --rr-ink-body: #2B3833;
   --rr-rule: #E4DED2;
+  /* green/clay darkened 2026-07 so all small-text pairings clear WCAG 4.5:1 */
   --rr-blue: #43647E;
-  --rr-green: #4C795F;
-  --rr-clay: #94704E;
+  --rr-green: #426853;
+  --rr-clay: #836244;
   --rr-green-soft: #E7EFE9;
   --rr-chip-text: #FFFFFF;
   --rr-back-btn: #E9E4D8;
@@ -26,6 +27,22 @@
 
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid #4f6d5d;
+  outline: 2px solid var(--rr-green);
   outline-offset: 3px;
+}
+
+/* Immediate, obvious tap feedback on every button (dementia-friendly:
+   confirms the tap registered, discourages double-tapping). */
+button {
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.06s ease, filter 0.06s ease;
+}
+button:active {
+  transform: scale(0.97);
+  filter: brightness(0.94);
+}
+@media (prefers-reduced-motion: reduce) {
+  button:active {
+    transform: none;
+  }
 }

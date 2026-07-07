@@ -12,8 +12,6 @@
       { speak, stop, speakingId } API for this swap).
 - [ ] Revisit topic mix with Mike (add Food/Books? drop anything?) —
       one row per feed in `lib/feeds.js`.
-- [ ] Consider very-large-text option (the old mock had an Aa toggle;
-      the new design dropped it — bring back if Mike needs it).
 - [ ] Per-source empty state if a whole feed goes quiet.
 
 ## Done
@@ -22,3 +20,6 @@
 - [x] PWA: manifest + icons (beacon on paper, `public/icon-*.png`).
 - [x] Greet Mike by name.
 - [x] Strip PBS donation boilerplate from articles.
+- [x] Dementia-design v0 pass: Aa/Aa text-size toggle (persisted), tap
+      feedback on all buttons, WCAG 4.5:1 contrast for green/clay tokens,
+      chip/masthead type bumped 12→14px.

@@ -101,13 +101,13 @@ function CategoryChip({ category, color }) {
       style={{
         display: "inline-block",
         fontFamily: fonts.ui,
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: 700,
         letterSpacing: "0.06em",
         textTransform: "uppercase",
         color: palette.chipText,
         background: color,
-        padding: "5px 11px",
+        padding: "6px 13px",
         borderRadius: 999,
       }}
     >
@@ -196,8 +196,18 @@ export default function ReadingRoom({ stories = [] }) {
   const [articleImage, setArticleImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [largeText, setLargeTextState] = useState(false);
   const { speakingId, speak, stop } = useReadAloud();
   const scrollRef = useRef(null);
+
+  // Text-size preference survives app relaunches.
+  useEffect(() => {
+    try { setLargeTextState(localStorage.getItem("ds-large-text") === "1"); } catch {}
+  }, []);
+  const setLargeText = (v) => {
+    setLargeTextState(v);
+    try { localStorage.setItem("ds-large-text", v ? "1" : "0"); } catch {}
+  };
 
   const story = stories.find((s) => s.id === openId) || null;
   const now = new Date();
@@ -255,7 +265,7 @@ export default function ReadingRoom({ stories = [] }) {
           onClick={backToList}
           aria-label="Go to today's stories"
           style={{
-            fontFamily: fonts.ui, fontSize: 12, fontWeight: 700,
+            fontFamily: fonts.ui, fontSize: 14, fontWeight: 700,
             letterSpacing: "0.12em", textTransform: "uppercase", color: palette.green,
             background: "transparent", border: "none", cursor: "pointer", padding: 0,
             display: "inline-flex", alignItems: "center", gap: 7,
@@ -360,8 +370,35 @@ export default function ReadingRoom({ stories = [] }) {
           <>
             <div ref={scrollRef} style={{ flex: 1, overflowY: "auto" }}>
               <div style={{ maxWidth: 620, margin: "0 auto", padding: "26px 24px 32px" }}>
-                <CategoryChip category={story.category} color={colorFor(story.category)} />
-                <h2 style={{ fontFamily: fonts.head, fontSize: 30, fontWeight: 700, color: palette.ink, lineHeight: 1.22, margin: "16px 0 0" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                  <CategoryChip category={story.category} color={colorFor(story.category)} />
+                  {/* Text-size toggle — bigger type on demand */}
+                  <div style={{ display: "flex", gap: 6 }}>
+                    {[
+                      { big: false, label: "Aa", size: 15 },
+                      { big: true, label: "Aa", size: 20 },
+                    ].map((opt) => (
+                      <button
+                        key={String(opt.big)}
+                        type="button"
+                        onClick={() => setLargeText(opt.big)}
+                        aria-pressed={largeText === opt.big}
+                        aria-label={opt.big ? "Use larger text" : "Use regular text"}
+                        style={{
+                          fontFamily: fonts.ui, fontSize: opt.size, fontWeight: 700,
+                          color: largeText === opt.big ? palette.green : palette.inkSoft,
+                          background: largeText === opt.big ? palette.greenSoft : "transparent",
+                          border: `1px solid ${largeText === opt.big ? palette.green : palette.rule}`,
+                          cursor: "pointer", borderRadius: 12,
+                          minWidth: 48, minHeight: 44, padding: "6px 12px",
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <h2 style={{ fontFamily: fonts.head, fontSize: largeText ? 34 : 30, fontWeight: 700, color: palette.ink, lineHeight: 1.22, margin: "16px 0 0" }}>
                   {story.headline}
                 </h2>
 
@@ -393,7 +430,7 @@ export default function ReadingRoom({ stories = [] }) {
                 )}
 
                 {!loading && error && (
-                  <p style={{ marginTop: 24, fontSize: 21, color: palette.inkBody, lineHeight: 1.6 }}>
+                  <p style={{ marginTop: 24, fontSize: largeText ? 25 : 21, color: palette.inkBody, lineHeight: 1.6 }}>
                     This story didn’t load. Head back and try again in a little while.
                   </p>
                 )}
@@ -401,7 +438,7 @@ export default function ReadingRoom({ stories = [] }) {
                 {!loading && !error && paragraphs && (
                   <div style={{ marginTop: 22, display: "flex", flexDirection: "column", gap: 22 }}>
                     {paragraphs.map((p, i) => (
-                      <p key={i} style={{ margin: 0, fontFamily: fonts.head, fontSize: 21, color: palette.inkBody, lineHeight: 1.72 }}>
+                      <p key={i} style={{ margin: 0, fontFamily: fonts.head, fontSize: largeText ? 25 : 21, color: palette.inkBody, lineHeight: 1.72 }}>
                         {p}
                       </p>
                     ))}
