@@ -24,5 +24,10 @@ Running log of choices and their reasons. Newest last.
   premium/server TTS deferred.
 - **PBS donation boilerplate stripped** in the extraction route via regex
   list (`BOILERPLATE`), extend it there if other sources add appeals.
+- **Card images: og:image fallback at feed-refresh time** — NPR's section
+  feeds carry no image metadata at all (PBS/BBC/Guardian do), so stories
+  arriving without an image get their article page's og:image fetched
+  server-side during the 4-hour revalidation (parallel, 6s timeout,
+  fails soft to the tinted category block).
 - **Handoff JSX committed, zip not** — `handoff/ReadingRoom.OneAtATime.jsx`
   kept for provenance; the zip and extract folder are gitignored.
