@@ -404,7 +404,10 @@ export default function ReadingRoom({ stories = [] }) {
             <div ref={scrollRef} style={{ flex: 1, overflowY: "auto" }}>
               <div style={{ maxWidth: 620, margin: "0 auto", padding: "26px 24px 32px" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-                  <CategoryChip category={story.category} color={colorFor(story.category)} />
+                  <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "8px 12px" }}>
+                    <CategoryChip category={story.category} color={colorFor(story.category)} />
+                    <SourceTag source={story.source} />
+                  </div>
                   {/* Text-size toggle — bigger type on demand */}
                   <div style={{ display: "flex", gap: 6 }}>
                     {[
