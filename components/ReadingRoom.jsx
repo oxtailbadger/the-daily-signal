@@ -16,6 +16,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { colorFor } from "../lib/categories";
+import { iconFor } from "../lib/sources";
 
 // Who the app greets on the home screen.
 const READER_NAME = "Mike";
@@ -112,6 +113,35 @@ function CategoryChip({ category, color }) {
       }}
     >
       {category}
+    </span>
+  );
+}
+
+/** Source attribution: the news site's icon + name (e.g. NPR, BBC). */
+function SourceTag({ source }) {
+  const icon = iconFor(source);
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 8,
+        fontFamily: fonts.ui,
+        fontSize: 14,
+        fontWeight: 600,
+        color: palette.inkSoft,
+      }}
+    >
+      {icon && (
+        <img
+          src={icon}
+          alt=""
+          width={20}
+          height={20}
+          style={{ borderRadius: 4, display: "block", flex: "none" }}
+        />
+      )}
+      {source}
     </span>
   );
 }
@@ -327,7 +357,10 @@ export default function ReadingRoom({ stories = [] }) {
                 >
                   <StoryPhoto src={s.image} category={s.category} color={color} height={150} />
                   <div style={{ padding: "18px 20px 22px" }}>
-                    <CategoryChip category={s.category} color={color} />
+                    <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "10px 12px" }}>
+                      <CategoryChip category={s.category} color={color} />
+                      <SourceTag source={s.source} />
+                    </div>
                     <div style={{ fontFamily: fonts.head, fontSize: 24, fontWeight: 600, color: palette.ink, lineHeight: 1.28, marginTop: 14 }}>
                       {s.headline}
                     </div>

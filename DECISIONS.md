@@ -48,5 +48,11 @@ Running log of choices and their reasons. Newest last.
   and clay (#94704E→#836244) so all small-text pairings clear WCAG 4.5:1,
   and bumped chip/masthead type 12→14px. Deliberately did NOT add settings,
   personalization, or reading history — co-design those with Mike.
+- **Source attribution on cards (2026-07-10)** — each card shows the topic
+  chip plus the originating site's icon + name (NPR/BBC/Guardian/PBS). Icons
+  are the sites' real favicons, downloaded once to `public/sources/*.png`
+  (via Google's favicon service) so there's no runtime external dependency;
+  `lib/sources.js` maps source name → local icon path. Add a row + PNG there
+  for a new source.
 - **Handoff JSX committed, zip not** — `handoff/ReadingRoom.OneAtATime.jsx`
   kept for provenance; the zip and extract folder are gitignored.
