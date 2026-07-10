@@ -20,6 +20,7 @@
 - [x] PWA: manifest + icons (beacon on paper, `public/icon-*.png`).
 - [x] Greet Mike by name.
 - [x] Strip PBS donation boilerplate from articles.
+- [x] Cap the feed to 10 stories; read-aloud queues if tapped while loading.
 - [x] Dementia-design v0 pass: Aa/Aa text-size toggle (persisted), tap
       feedback on all buttons, WCAG 4.5:1 contrast for green/clay tokens,
       chip/masthead type bumped 12→14px.

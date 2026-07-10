@@ -13,6 +13,17 @@ Running log of choices and their reasons. Newest last.
   stale-snapshot lag. Trade-off: no CDN HTML caching and occasional refetch
   on serverless cold starts, both negligible for one household. A refresh
   failure falls back to the last good list.
+- **TOTAL_CAP = 10 stories (2026-07-10)** — for a dementia-friendly, easy-to-
+  consume feed and to avoid doom-scrolling, the list is hard-capped at the 10
+  newest stories across all feeds (after dedupe + age filter), even if a feed
+  contributed more than one. `PER_FEED` stays 2 as the per-feed candidate pool.
+  Capping before the og:image fallback also means we only fetch images for
+  shown stories.
+- **Read-aloud honors taps made while the article is still loading** — tapping
+  "Read this to me" before the body arrives no longer reads just the headline
+  and stops. It queues (button shows "Starting when ready…") and auto-starts
+  with the full article once loaded; a load error drops the request. See
+  `pendingSpeak` in components/ReadingRoom.jsx.
 - **MAX_AGE_MS = 3 days** — a feed's 2nd-newest item can genuinely be days
   old (slow sections like PBS Science); with `PER_FEED = 2` those stragglers
   surfaced as "stale." Items older than 3 days are dropped (undated items

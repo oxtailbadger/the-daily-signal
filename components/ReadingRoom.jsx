@@ -191,12 +191,17 @@ function StoryPhoto({ src, category, color, height = 150, radiusTop = true, roun
   return <img src={src} alt="" style={style} onError={() => setFailed(true)} />;
 }
 
-function ListenButton({ active, onClick }) {
+// state: "idle" | "pending" (queued while the article loads) | "speaking"
+function ListenButton({ state, onClick }) {
+  const label =
+    state === "speaking" ? "Stop reading" :
+    state === "pending" ? "Starting when ready…" :
+    "Read this to me";
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-pressed={active}
+      aria-pressed={state === "speaking"}
       style={{
         display: "inline-flex",
         alignItems: "center",
@@ -210,10 +215,13 @@ function ListenButton({ active, onClick }) {
         cursor: "pointer",
         padding: "11px 17px",
         borderRadius: 999,
+        opacity: state === "pending" ? 0.75 : 1,
       }}
     >
-      <span aria-hidden="true" style={{ fontSize: 12 }}>▶</span>
-      {active ? "Stop reading" : "Read this to me"}
+      <span aria-hidden="true" style={{ fontSize: 12 }}>
+        {state === "speaking" ? "■" : "▶"}
+      </span>
+      {label}
     </button>
   );
 }
@@ -227,6 +235,7 @@ export default function ReadingRoom({ stories = [] }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [largeText, setLargeTextState] = useState(false);
+  const [pendingSpeak, setPendingSpeak] = useState(false); // asked to read before text was ready
   const { speakingId, speak, stop } = useReadAloud();
   const scrollRef = useRef(null);
 
@@ -244,6 +253,7 @@ export default function ReadingRoom({ stories = [] }) {
 
   const openStory = async (s) => {
     stop();
+    setPendingSpeak(false);
     setOpenId(s.id);
     setPhase("reading");
     setLoading(true);
@@ -264,8 +274,31 @@ export default function ReadingRoom({ stories = [] }) {
     }
   };
 
-  const backToList = () => { stop(); setPhase("list"); setOpenId(null); };
-  const finishReading = () => { stop(); setPhase("done"); };
+  const backToList = () => { stop(); setPendingSpeak(false); setPhase("list"); setOpenId(null); };
+  const finishReading = () => { stop(); setPendingSpeak(false); setPhase("done"); };
+
+  const articleSpeech = () =>
+    story ? story.headline + ". " + ((paragraphs || []).join(" ")) : "";
+
+  // Tap handler for "Read this to me": speak now if the article is ready,
+  // otherwise remember the request and start as soon as it loads.
+  const handleListen = () => {
+    if (speakingId === story.id) return stop();       // currently reading → stop
+    if (pendingSpeak) return setPendingSpeak(false);  // waiting → cancel
+    if (loading || !paragraphs) return setPendingSpeak(true); // not ready → queue
+    speak(story.id, articleSpeech());
+  };
+
+  // Once the article finishes loading, honor a queued read-aloud request.
+  // If it failed to load, drop the request rather than read just the title.
+  useEffect(() => {
+    if (!pendingSpeak) return;
+    if (error) { setPendingSpeak(false); return; }
+    if (!loading && paragraphs && story) {
+      speak(story.id, articleSpeech());
+      setPendingSpeak(false);
+    }
+  }, [pendingSpeak, loading, paragraphs, error]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Lock body scroll + Escape to leave, while a story is open.
   useEffect(() => {
@@ -448,14 +481,16 @@ export default function ReadingRoom({ stories = [] }) {
                   />
                 </div>
 
-                <div style={{ marginTop: 20 }}>
-                  <ListenButton
-                    active={speakingId === story.id}
-                    onClick={() =>
-                      speak(story.id, story.headline + ". " + ((paragraphs || []).join(" ")))
-                    }
-                  />
-                </div>
+                {!error && (
+                  <div style={{ marginTop: 20 }}>
+                    <ListenButton
+                      state={
+                        speakingId === story.id ? "speaking" : pendingSpeak ? "pending" : "idle"
+                      }
+                      onClick={handleListen}
+                    />
+                  </div>
+                )}
 
                 {loading && (
                   <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 14 }} aria-hidden="true">
