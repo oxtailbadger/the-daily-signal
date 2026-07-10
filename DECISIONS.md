@@ -2,9 +2,21 @@
 
 Running log of choices and their reasons. Newest last.
 
-- **Next.js + ISR over cron** — the 4-hour refresh is `revalidate = 14400` on
-  the page; first visitor after expiry triggers the refetch. Simpler and free
-  vs. a scheduled job; fine for one household of users.
+- **Refresh: in-memory 4h cache + force-dynamic (replaced ISR, 2026-07-07)** —
+  originally used `export const revalidate = 14400` (on-demand ISR). On a
+  low-traffic single-user app that felt stale for days: ISR serves the
+  *previous* snapshot on the triggering visit and never refreshes without
+  traffic. Now the page is `force-dynamic` and `getHeadlines()` holds a
+  module-level cache (`CACHE_MS = 4h`): every visit renders live, serving
+  cached feeds until 4h elapse, then blocking for a fresh fetch so the
+  visitor sees current news immediately — no traffic dependence, no
+  stale-snapshot lag. Trade-off: no CDN HTML caching and occasional refetch
+  on serverless cold starts, both negligible for one household. A refresh
+  failure falls back to the last good list.
+- **MAX_AGE_MS = 3 days** — a feed's 2nd-newest item can genuinely be days
+  old (slow sections like PBS Science); with `PER_FEED = 2` those stragglers
+  surfaced as "stale." Items older than 3 days are dropped (undated items
+  kept). A slow section may show 1 item rather than a stale one.
 - **Server-side article extraction** — browsers can't fetch RSS/articles
   cross-origin; `/api/article` runs readability on the source HTML. Endpoint
   is allowlisted to feed domains so it can't be used as an open proxy.
