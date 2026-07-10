@@ -11,7 +11,11 @@
  *                         premium TTS + sentence highlighting still future work.
  *   [TODO:ORIENTATION]    resolved — masthead is a Home button; bottom bar is a
  *                         fixed flex row outside the scroll area.
- *   [TODO:DATA-REFRESH]   resolved upstream — app/page.jsx revalidates every 4h.
+ *   [TODO:DATA-REFRESH]   resolved upstream — app/page.jsx is force-dynamic and
+ *                         lib/feeds.js caches the feeds in memory for 4h.
+ *
+ * This component just renders the `stories` it is given (see the story shape
+ * in lib/feeds.js) and fetches full article bodies from /api/article on tap.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -37,7 +41,25 @@ const palette = {
 const fonts = {
   head: "'Spline Sans', system-ui, sans-serif",
   ui: "'Spline Sans', system-ui, sans-serif",
-  mast: "'Newsreader', Georgia, serif",
+};
+
+// Shared button styling — spread into a button's inline style so each one
+// only spells out what's distinctive (color, size, radius), not the native
+// chrome reset. Keeps the many inline button styles below readable.
+const resetButton = { background: "transparent", border: "none", cursor: "pointer" };
+
+// The tappable story card on the home screen (verbose enough to name).
+const storyCardStyle = {
+  ...resetButton,
+  display: "block",
+  width: "100%",
+  textAlign: "left",
+  background: "var(--rr-paper-card)",
+  border: "1px solid var(--rr-rule)",
+  borderRadius: 20,
+  overflow: "hidden",
+  boxShadow: "0 2px 8px rgba(35,48,43,0.06)",
+  padding: 0,
 };
 
 /* ── Helpers ────────────────────────────────────────────────────────────── */
@@ -203,6 +225,7 @@ function ListenButton({ state, onClick }) {
       onClick={onClick}
       aria-pressed={state === "speaking"}
       style={{
+        ...resetButton,
         display: "inline-flex",
         alignItems: "center",
         gap: 8,
@@ -211,8 +234,6 @@ function ListenButton({ state, onClick }) {
         fontWeight: 600,
         color: palette.green,
         background: palette.greenSoft,
-        border: "none",
-        cursor: "pointer",
         padding: "11px 17px",
         borderRadius: 999,
         opacity: state === "pending" ? 0.75 : 1,
@@ -328,10 +349,10 @@ export default function ReadingRoom({ stories = [] }) {
           onClick={backToList}
           aria-label="Go to today's stories"
           style={{
+            ...resetButton,
             fontFamily: fonts.ui, fontSize: 14, fontWeight: 700,
             letterSpacing: "0.12em", textTransform: "uppercase", color: palette.green,
-            background: "transparent", border: "none", cursor: "pointer", padding: 0,
-            display: "inline-flex", alignItems: "center", gap: 7,
+            padding: 0, display: "inline-flex", alignItems: "center", gap: 7,
           }}
         >
           {/* lattice-mast mark, matches the app icon */}
@@ -381,12 +402,7 @@ export default function ReadingRoom({ stories = [] }) {
                   type="button"
                   onClick={() => openStory(s)}
                   aria-label={`Read: ${s.headline}`}
-                  style={{
-                    display: "block", width: "100%", textAlign: "left", cursor: "pointer",
-                    background: palette.paperCard, border: `1px solid ${palette.rule}`,
-                    borderRadius: 20, overflow: "hidden", boxShadow: "0 2px 8px rgba(35,48,43,0.06)",
-                    padding: 0,
-                  }}
+                  style={storyCardStyle}
                 >
                   <StoryPhoto src={s.image} category={s.category} color={color} height={150} />
                   <div style={{ padding: "18px 20px 22px" }}>
@@ -530,8 +546,9 @@ export default function ReadingRoom({ stories = [] }) {
                 type="button"
                 onClick={backToList}
                 style={{
+                  ...resetButton,
                   flex: "none", fontFamily: fonts.ui, fontSize: 16, fontWeight: 600,
-                  color: palette.inkSoft, background: palette.backBtn, border: "none", cursor: "pointer",
+                  color: palette.inkSoft, background: palette.backBtn,
                   padding: "16px 18px", borderRadius: 14,
                 }}
               >
@@ -541,8 +558,9 @@ export default function ReadingRoom({ stories = [] }) {
                 type="button"
                 onClick={finishReading}
                 style={{
+                  ...resetButton,
                   flex: 1, fontFamily: fonts.head, fontSize: 18, fontWeight: 700,
-                  color: "#fff", background: palette.green, border: "none", cursor: "pointer",
+                  color: "#fff", background: palette.green,
                   padding: 16, borderRadius: 14,
                 }}
               >
@@ -579,8 +597,9 @@ export default function ReadingRoom({ stories = [] }) {
               type="button"
               onClick={backToList}
               style={{
+                ...resetButton,
                 marginTop: 32, fontFamily: fonts.head, fontSize: 19, fontWeight: 700,
-                color: palette.ink, background: "#fff", border: "none", cursor: "pointer",
+                color: palette.ink, background: "#fff",
                 padding: "18px 30px", borderRadius: 16,
               }}
             >

@@ -16,22 +16,27 @@ with big type, one action per screen, and always an obvious way back.
 - Next.js 14 (app router, JSX not TS), React 18, Tailwind (utility classes only).
 - `rss-parser` for feeds; `@mozilla/readability` + `jsdom` for article extraction.
 - Inline styles referencing CSS custom properties (`--rr-*` in `app/globals.css`).
-- Fonts: Spline Sans (UI + headlines), Newsreader (masthead) via Google Fonts.
+- Fonts: Spline Sans (UI + headlines) via Google Fonts.
 - Installable PWA: `app/manifest.js` + icons in `public/`.
 
 ## Architecture
 
-- `app/page.jsx` — server component; `revalidate = 14400` (4-hour refresh).
+- `app/page.jsx` — `force-dynamic` server component; renders live on every
+  request. Freshness comes from a 4-hour in-memory cache in `getHeadlines()`,
+  not from ISR (see DECISIONS.md for why).
 - `lib/feeds.js` — `FEEDS`: one row per (source, topic); the topic IS the
-  story's category chip. `PER_FEED` stories kept per row, merged newest-first.
+  story's category chip. Up to `PER_FEED` stories per row, merged newest-first,
+  deduped, older-than-`MAX_AGE_MS` dropped, then hard-capped at `TOTAL_CAP`.
+  Holds the 4-hour in-memory cache.
 - `lib/categories.js` — category → accent color map (single source of truth).
+- `lib/sources.js` — source name → local icon path (`public/sources/*.png`).
 - `app/api/article/route.js` — on-demand readability extraction, domain
   allowlisted to the feed sources, with a boilerplate filter (PBS donation
   appeals etc.). Responses cached 1 day.
 - `components/ReadingRoom.jsx` — the whole UI, from the Claude Design handoff
   ("One at a Time", direction 1b). Original handoff preserved at
   `handoff/ReadingRoom.OneAtATime.jsx`; first text-only mock at
-  `reading-room.jsx`.
+  `archive/reading-room.mock.jsx`.
 
 ## Product rules (intentional, don't "fix")
 
